@@ -10,7 +10,7 @@ function App() {
   React.useEffect(() => {
   }, [formatData, textSearch])
 
-  const searchInObject =(obj, searchText) => {
+  const searchInObject = (obj, searchText) => {
     // Проверяем, является ли текущий объект строкой и содержит ли он искомый текст
     if (typeof obj === 'string' && obj.toLowerCase().includes(searchText.toLowerCase())) {
       return true;
@@ -49,11 +49,14 @@ function App() {
     const filteredArray = lines.filter(element => element && element.trim());
     const objectsArray = [];
 
-    filteredArray.forEach(line => {
 
-      const parts = line.split(' - ');
-      const jsonStart = parts[2].indexOf('{');
-      const jsonString = parts[2].slice(jsonStart);
+
+    filteredArray.forEach(line => {
+      const jsonStart = line.indexOf('{')
+      const jsonString = line.slice(jsonStart)
+      const descInfo = line.substring(0, jsonStart);
+
+      const parts = descInfo.split(' - ');
       const jsonObject = JSON.parse(jsonString);
 
       const resultObject = {
@@ -67,53 +70,61 @@ function App() {
       objectsArray.push(resultObject);
     });
     setFormatData(objectsArray);
-    console.log(objectsArray)
   };
 
   return (
     <div className="App" style={{  backgroundColor: "#00000044" }}>
-      <form onSubmit={handleSubmit}>
-        <div style={{display: "flex", flex: 1, flexDirection: "column", maxWidth: 500}}>
-          <textarea style={{maxWidth: 500, maxHeight: 200, minWidth: 100, minHeight: 100}} onChange={handleChange}></textarea>
-          <button type={'submit'}>Преобразовать</button>
+      <div style={{position: 'fixed', right: 0, top: 0, left: 0, backgroundColor: "#312f2f", zIndex: 1000}}>
+        <form onSubmit={handleSubmit}>
+          <div style={{display: "flex", flex: 1, maxWidth: 500, alignItems: 'center', gap: 50}}>
+            <textarea style={{maxWidth: 500, maxHeight: 200, minWidth: 500, minHeight: 100}} onChange={handleChange}></textarea>
+            <button style={{height: 40}} type={'submit'}>Преобразовать</button>
+          </div>
+        </form>
+        <input style={{position: 'fixed', right: 10, top: 10, width: 400, height: 30 }} placeholder={'Поиск'} type="text" onChange={searchText}/>
+        <div style={{display: "flex", flexDirection: 'row', justifyContent: "space-between", gap: 1}}>
+          <div style={{minWidth: 150, maxWidth: 150, backgroundColor: "#00000099"}}>Сервис</div>
+          <div style={{minWidth: 150, maxWidth: 150, backgroundColor: "#00000099"}}>Дата выполнения</div>
+          <div style={{minWidth: 200, maxWidth: 200, backgroundColor: "#00000099"}}>Статус</div>
+          <div style={{minWidth: 100, maxWidth: 100, backgroundColor: "#00000099"}}>Время выполнения</div>
+          <div style={{flex: 5, backgroundColor: "#00000099"}}>data</div>
         </div>
-      </form>
-      <input type="text" onChange={searchText}/>
-    <div>
-      <div style={{display: "flex", flexDirection: 'row', justifyContent: "space-between"}}>
-        <div style={{minWidth: 150, maxWidth: 150, backgroundColor: "#00000011"}}>Сервис</div>
-        <div style={{minWidth: 150, maxWidth: 150, backgroundColor: "#00000033"}}>Дата выполнения</div>
-        <div style={{minWidth: 200, maxWidth: 200, backgroundColor: "#00000055"}}>Статус</div>
-        <div style={{minWidth: 100, maxWidth: 100, backgroundColor: "#00000077"}}>Время выполнения</div>
-        <div style={{flex: 5, backgroundColor: "#00000099"}}>data</div>
       </div>
-      {formatData?.filter(obj => searchInObject(obj, textSearch)).map(item =>
+    <div>
+
+      {formatData?.filter(obj => searchInObject(obj, textSearch)).map((item, index) =>
         <div style={{
           display: "flex",
           flexDirection: 'row',
           justifyContent: "space-between",
           backgroundColor:
             item.status.includes('ERROR') ? 'rgba(124,0,0,0.55)' :
-              item.status.includes('SUCCESS') ? 'rgba(26,68,0,0.56)' : '',
+            item.status.includes('SUCCESS') ? 'rgba(26,68,0,0.56)' : '',
           marginBottom: 10
-        }}>
+        }}
+        key={index}>
           <div style={{minWidth: 150, maxWidth: 150, minHeight: 30, alignItems: 'center', display: 'flex'}}>{item.name_service}</div>
           <div style={{minWidth: 150, maxWidth: 150, minHeight: 30, alignItems: 'center', display: 'flex'}}>{item.date}</div>
           <div style={{minWidth: 200, maxWidth: 200, minHeight: 30, alignItems: 'center', display: 'flex'}}>{item.status}{item.status.includes('START') ? '--->' : ''}</div>
           <div style={{minWidth: 100, maxWidth: 100, minHeight: 30, alignItems: 'center', display: 'flex'}}>{item.time_request}</div>
-          <div style={{flex: 5, alignItems: 'start', display: 'flex', flexDirection: "column"}}>
+          <div style={{flex: 5, alignItems: 'start', flexDirection: "column", display: 'inline-block', wordBreak: 'break-word', wordWrap: 'break-word', overflowWrap: 'break-word', whiteSpace: 'pre-wrap'}}>
             <div style={{display: 'flex', flexDirection: 'row', gap: 10}}>
               <div style={{
                 backgroundColor:
-                  item.data.config.method.includes('GET') ? '#61affe99' :
-                    item.data.config.method.includes('PUT') ? '#fca13099' :
-                      item.data.config.method.includes('DELETE') ? '#f93e3e99' :
-                        item.data.config.method.includes('POST') ? '#49cc9099' : '',
+                  item.data?.config?.method.includes('GET') ? '#61affe99' :
+                  item.data?.config?.method.includes('PUT') ? '#fca13099' :
+                  item.data?.config?.method.includes('DELETE') ? '#f93e3e99' :
+                  item.data?.config?.method.includes('POST') ? '#49cc9099' : '',
                 color: '#fff',
                 fontWeight: 600
-              }}>{item.data.config.method}</div> {item.data.url}
+              }}>{item.data?.config?.method}</div> {item.data?.url}
             </div>
-            {item.data.config && <ReactJson style={{backgroundColor: '#ffffff00'}} theme={'google'} src={item.data.config} />}
+            <div style={{display: 'inline-block', wordBreak: 'break-word', wordWrap: 'break-word', overflowWrap: 'break-word', whiteSpace: 'pre-wrap', paddingRight: 10}}>
+              {item.data.config ? 'config: ' : ''}{JSON.stringify(item.data.config)}
+            </div>
+            <div style={{display: 'inline-block', wordBreak: 'break-word', wordWrap: 'break-word', overflowWrap: 'break-word', whiteSpace: 'pre-wrap', paddingRight: 10}}>
+              {item.data.body ? 'body: ' : ''}{JSON.stringify(item.data.body)}
+            </div>
           </div>
         </div>
       )}
