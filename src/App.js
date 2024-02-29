@@ -5,6 +5,7 @@ function App() {
   const [text, setText] = React.useState('');
   const [textSearch, setTextSearch] = React.useState('');
   const [formatData, setFormatData] = React.useState([]);
+  const [isShow, setIsShow] = React.useState(true);
 
 
   React.useEffect(() => {
@@ -82,8 +83,9 @@ function App() {
           </div>
         </form>
         <input style={{position: 'fixed', right: 10, top: 10, width: 400, height: 30 }} placeholder={'Поиск'} type="text" onChange={searchText}/>
+        <button onClick={() => setIsShow(true)}>Показать все столбцы</button>
         <div style={{display: "flex", flexDirection: 'row', justifyContent: "space-between", gap: 1}}>
-          <div style={{minWidth: 150, maxWidth: 150, backgroundColor: "#00000099"}}>Сервис</div>
+          {isShow ? <div style={{minWidth: 150, maxWidth: 150, backgroundColor: "#00000099"}}>Сервис <button onClick={() => setIsShow(false)}>скрыть</button></div> : null}
           <div style={{minWidth: 150, maxWidth: 150, backgroundColor: "#00000099"}}>Дата выполнения</div>
           <div style={{minWidth: 200, maxWidth: 200, backgroundColor: "#00000099"}}>Статус</div>
           <div style={{minWidth: 100, maxWidth: 100, backgroundColor: "#00000099"}}>Время выполнения</div>
@@ -103,7 +105,7 @@ function App() {
           marginBottom: 10
         }}
         key={index}>
-          <div style={{minWidth: 150, maxWidth: 150, minHeight: 30, alignItems: 'center', display: 'flex'}}>{item.name_service}</div>
+          {isShow ? <div style={{minWidth: 150, maxWidth: 150, minHeight: 30, alignItems: 'center', display: 'flex'}}>{item.name_service}</div> : null}
           <div style={{minWidth: 150, maxWidth: 150, minHeight: 30, alignItems: 'center', display: 'flex'}}>{item.date}</div>
           <div style={{minWidth: 200, maxWidth: 200, minHeight: 30, alignItems: 'center', display: 'flex'}}>{item.status}{item.status.includes('START') ? '--->' : ''}</div>
           <div style={{minWidth: 100, maxWidth: 100, minHeight: 30, alignItems: 'center', display: 'flex'}}>{item.time_request}</div>
