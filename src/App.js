@@ -8,7 +8,6 @@ function App() {
 
 
   React.useEffect(() => {
-    console.log(formatData.filter(obj => searchInObject(obj, textSearch)))
   }, [formatData, textSearch])
 
   const searchInObject =(obj, searchText) => {
