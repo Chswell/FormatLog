@@ -1,5 +1,4 @@
 import React from "react";
-import ReactJson from "react-json-view";
 
 function App() {
   const [text, setText] = React.useState('');
